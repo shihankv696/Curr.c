@@ -3,9 +3,13 @@
         {
             "name": "Win32",
             "includePath": [
+<<<<<<< HEAD
                 "${workspaceFolder}/**",
                 "${workspaceFolder}/.vscode",
                 "${workspaceFolder}/include"
+=======
+                "${workspaceFolder}/**"
+>>>>>>> a06a748b7d1780465125a5c629b812278fb1f9b6
             ],
             "defines": [
                 "_DEBUG",
