@@ -7,6 +7,7 @@ SRC_DIR = src
 MEM_DIR = $(SRC_DIR)/memory
 TEST_DIR = test
 BIN_DIR = bin
+LIB_DIR = lib
 
 # === Memory allocation sources ===
 MEMORY_SRCS = \
@@ -38,7 +39,7 @@ TEST_DS_OBJ = $(TEST_DS_SRC:.c=.o)
 TEST_DS_BIN = $(BIN_DIR)/test_data_structures.exe
 
 # === Default target ===
-all: $(TEST_BIN) $(TEST_DS_BIN)
+all: $(TEST_BIN) $(TEST_DS_BIN) $(LIB_DIR)/libcurrc.a
 
 # === Compile Rules ===
 %.o: %.c
@@ -50,6 +51,12 @@ $(TEST_BIN): $(TEST_OBJ) $(DS_OBJS) $(MEMORY_OBJS)
 
 $(TEST_DS_BIN): $(TEST_DS_OBJ) $(DS_OBJS) $(MEMORY_OBJS)
 	$(CC) $(CFLAGS) $^ -o $@
+
+# === Build Static LIbrary ==
+$(LIB_DIR)/libcurrc.a: $(DS_OBJS) $(MEMORY_OBJS)
+	mkdir -p $(LIB_DIR)
+	ar rcs $@ $^
+
 
 # === Clean ===
 clean:
