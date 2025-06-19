@@ -8,13 +8,9 @@
 - `drealloc`: Reallocates memory.
 - `dfree`: Frees allocated memory.
 
-## Build Instructions
-To build the project, use the following command:
-```
-make
-```
-
-## Testing
-To run the tests, use the following command:
-```
-make run_tests
+## One-Step Installation
+  . For Linux/MacOS
+    curl -sSL https://github.com/shihankv696/Curr.c/releases/download/v1.0.0/install.sh | bash
+  . For Windows
+    Invoke-WebRequest -Uri         https://github.com/shihankv696/Curr.c/releases/download/v1.0.0/install.bat -OutFile install.bat
+.\install.bat
