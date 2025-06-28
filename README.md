@@ -68,7 +68,6 @@ Curr.c/
 ├── LICENSE
 └── README.md
 
-
 🧑‍💻 Contributing
 Contributions are welcome!
 Please fork this repository, make your changes, and submit a pull request.
@@ -87,5 +86,6 @@ Feel free to open an issue for bugs or feature requests.
 
 🙋 Get in Touch
 Have suggestions, improvements, or just want to say hi?
-Connect with me on LinkedIn
+Connect with me on LinkedIn: https://www.linkedin.com/in/shihan-kv-945ab0288/
 Let’s collaborate on something awesome! 🚀
+
