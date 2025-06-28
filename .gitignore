@@ -1,0 +1,17 @@
+# Object files
+*.o
+
+# Executables
+*.exe
+
+# Build folders
+bin/
+lib/
+*.dll
+*.so
+*.a
+
+# Temporary or backup files
+*.log
+*.tmp
+*.swp
