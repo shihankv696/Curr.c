@@ -1,111 +1,129 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
-#include "../include/hashMap.h"
-#include "../include/memory_allocation.h" // dmalloc, dfree, etc.
+#include "hashMap.h"
+#include "memory_allocation.h"
 
-#define HASHMAP_INITIAL_SIZE 101
+#define TABLE_SIZE 100
 
-// Hash function (djb2)
-unsigned int hash_function(const char *key)
+
+// Create a new hash node
+HashNode *create_node(const char *key, int value)
 {
-    unsigned int hash = 5381;
-    int c;
-    while ((c = *key++))
-        hash = ((hash << 5) + hash) + c; // hash * 33 + c
-    return hash;
-}
-
-HashMap *Hashmap()
-{
-    HashMap *map = (HashMap *)dmalloc(sizeof(HashMap));
-    map->size = HASHMAP_INITIAL_SIZE;
-    map->buckets = (HashNode **)dmalloc(sizeof(HashNode *) * map->size);
-
-    for (int i = 0; i < map->size; i++)
-        map->buckets[i] = NULL;
-
-    return map;
-}
-
-void put(HashMap *map, const char *key, int value)
-{
-    unsigned int index = hash_function(key) % map->size;
-    HashNode *node = map->buckets[index];
-
-    while (node != NULL)
-    {
-        if (strcmp(node->key, key) == 0)
-        {
-            node->value = value;
-            return;
-        }
-        node = node->next;
-    }
-
     HashNode *new_node = (HashNode *)dmalloc(sizeof(HashNode));
     new_node->key = (char *)dmalloc(strlen(key) + 1);
     strcpy(new_node->key, key);
     new_node->value = value;
-    new_node->next = map->buckets[index];
-    map->buckets[index] = new_node;
+    new_node->next = NULL;
+    return new_node;
 }
 
-int get(HashMap *map, const char *key, int *found)
+// Hash function (simple)
+unsigned int hash(const char *key)
 {
-    unsigned int index = hash_function(key) % map->size;
-    HashNode *node = map->buckets[index];
-
-    while (node != NULL)
+    unsigned int hash = 0;
+    for (int i = 0; key[i] != '\0'; ++i)
     {
-        if (strcmp(node->key, key) == 0)
+        hash = hash * 31 + key[i];
+    }
+    return hash % TABLE_SIZE;
+}
+
+// Create a new hash map
+HashMap *hashmap_create()
+{
+    HashMap *map = (HashMap *)dmalloc(sizeof(HashMap));
+    for (int i = 0; i < TABLE_SIZE; ++i)
+    {
+        map->table[i] = NULL;
+    }
+    return map;
+}
+
+// Insert key-value pair
+void hashmap_insert(HashMap *map, const char *key, int value)
+{
+    unsigned int index = hash(key);
+    HashNode *head = map->table[index];
+
+    // Check if key exists
+    HashNode *current = head;
+    while (current != NULL)
+    {
+        if (strcmp(current->key, key) == 0)
         {
-            *found = 1;
-            return node->value;
+            current->value = value;
+            return;
         }
-        node = node->next;
+        current = current->next;
     }
 
+    // Key doesn't exist, create new node
+    HashNode *new_node = create_node(key, value);
+    new_node->next = head;
+    map->table[index] = new_node;
+}
+
+// Get value by key
+int hashmap_get(HashMap *map, const char *key, int *found)
+{
+    unsigned int index = hash(key);
+    HashNode *current = map->table[index];
+    while (current != NULL)
+    {
+        if (strcmp(current->key, key) == 0)
+        {
+            *found = 1;
+            return current->value;
+        }
+        current = current->next;
+    }
     *found = 0;
     return -1;
 }
 
-void removeKey(HashMap *map, const char *key)
+// Delete key
+void hashmap_delete(HashMap *map, const char *key)
 {
-    unsigned int index = hash_function(key) % map->size;
-    HashNode *node = map->buckets[index];
+    unsigned int index = hash(key);
+    HashNode *current = map->table[index];
     HashNode *prev = NULL;
 
-    while (node != NULL)
+    while (current != NULL)
     {
-        if (strcmp(node->key, key) == 0)
+        if (strcmp(current->key, key) == 0)
         {
             if (prev == NULL)
-                map->buckets[index] = node->next;
+            {
+                map->table[index] = current->next;
+            }
             else
-                prev->next = node->next;
-
-            dfree(node->key);
-            dfree(node);
+            {
+                prev->next = current->next;
+            }
+            dfree(current->key);
+            dfree(current);
             return;
         }
-        prev = node;
-        node = node->next;
+        prev = current;
+        current = current->next;
     }
 }
 
 void hashmap_free(HashMap *map)
 {
-    for (int i = 0; i < map->size; i++)
+    if (map == NULL)
+        return;
+    for (int i = 0; i < TABLE_SIZE; ++i)
     {
-        HashNode *node = map->buckets[i];
-        while (node)
+        HashNode *current = map->table[i];
+        while (current != NULL)
         {
-            HashNode *temp = node;
-            node = node->next;
+            HashNode *temp = current;
+            current = current->next;
             dfree(temp->key);
             dfree(temp);
         }
     }
-    dfree(map->buckets);
     dfree(map);
 }

@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<package>
+  <metadata>
+    <id>currc</id>
+    <version>1.0.0</version>
+    <title>Curr.c Framework</title>
+    <authors>shihankv696</authors>
+    <owners>shihankv696</owners>
+    <description>A lightweight data structure framework written in C with custom memory support.</description>
+    <licenseUrl>https://github.com/shihankv696/Curr.c/blob/main/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/shihankv696/Curr.c</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <tags>c datastructures memory</tags>
+  </metadata>
+</package>

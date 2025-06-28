@@ -1,6 +1,8 @@
 #ifndef HASHMAP_H
 #define HASHMAP_H
 
+#define TABLE_SIZE 100
+
 typedef struct HashNode
 {
     char *key;
@@ -8,17 +10,16 @@ typedef struct HashNode
     struct HashNode *next;
 } HashNode;
 
-typedef struct
+typedef struct HashMap
 {
-    int size;
-    HashNode **buckets;
+    HashNode *table[TABLE_SIZE];
 } HashMap;
 
-// HashMap functions
-HashMap *Hashmap();
-void put(HashMap *map, const char *key, int value);
-int get(HashMap *map, const char *key, int *found);
-void removeKey(HashMap *map, const char *key);
+// Function prototypes
+HashMap *hashmap_create();
+void hashmap_insert(HashMap *map, const char *key, int value);
+int hashmap_get(HashMap *map, const char *key, int *found);
+void hashmap_delete(HashMap *map, const char *key);
 void hashmap_free(HashMap *map);
 
 #endif // HASHMAP_H
