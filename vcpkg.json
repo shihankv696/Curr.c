@@ -1,0 +1,12 @@
+{
+    "dependencies": [
+        "fmt",
+        "BST",
+        "hashMap",
+        "memory_allocation",
+        "stack",
+        "Curr",
+        "linked_list",
+        "queue"
+    ]
+}

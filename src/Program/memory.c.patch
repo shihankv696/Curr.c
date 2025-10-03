@@ -1,0 +1,34 @@
+if (buffer == NULL) {
+        return MY_FALSE;
+    }
+
+    if (buffer_size <= ALIGN8(sizeof(BlockHeader)))
+        return MY_FALSE;
+
+    heap_start = buffer;
+    heap_size = buffer_size;
+
+    first = (BlockHeader *)heap_start;
+    first->size = buffer_size - ALIGN8(sizeof(BlockHeader));
+    first->free = MY_TRUE;
+    first->next = NULL;
+}
+=======
+dbool memory_init(void *buffer, size_t buffer_size) {
+    if (buffer == NULL) {
+        return MY_FALSE;
+    }
+
+    if (buffer_size <= ALIGN8(sizeof(BlockHeader)))
+        return MY_FALSE;
+
+    heap_start = buffer;
+    heap_size = buffer_size;
+
+    first = (BlockHeader *)heap_start;
+    first->size = buffer_size - ALIGN8(sizeof(BlockHeader));
+    first->free = MY_TRUE;
+    first->next = NULL;
+
+    return MY_TRUE;
+}

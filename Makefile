@@ -1,24 +1,28 @@
-# === Compiler and flags ===
-ifeq ($(OS),Windows_NT)
-    CC = cl
+ifeq ($(findstring cl,$(CC)),cl)
     CFLAGS = /nologo /EHsc /MD /Iinclude /Isrc /Isrc/Program
     OUTFLAG = /Fe
     OBJFLAG = /Fo
-    RM = del
-    EXE = .exe
     SHARED = /LD
     AR = lib
     ARFLAGS = /OUT:
 else
-    CC = gcc
     CFLAGS = -Wall -Wextra -g -Iinclude -Isrc -Isrc/Program
     OUTFLAG = -o
     OBJFLAG =
-    RM = rm -f
-    EXE =
     SHARED = -shared
     AR = ar
     ARFLAGS = rcs
+endif
+
+# Fix AR and ARFLAGS for Windows with gcc
+ifeq ($(OS),Windows_NT)
+    ifneq ($(findstring cl,$(CC)),cl)
+        AR = ar
+        ARFLAGS = rcs
+    else
+        AR = lib
+        ARFLAGS =
+    endif
 endif
 
 # === Directories ===
@@ -64,56 +68,55 @@ all: $(LIB_DIR)/libcurrc.a $(LIB_DIR)/libcurrc.so $(LIB_DIR)/currc.dll $(TEST_DS
 # === Compile Rules ===
 ifeq ($(OS),Windows_NT)
 %.o: %.c
-    $(CC) $(CFLAGS) /c $< $(OBJFLAG)$@
+    $(CC) $(CFLAGS) -c $< -o $@
 else
 %.o: %.c
     $(CC) $(CFLAGS) -c $< -o $@
 endif
 
-# === Executable Linking ===
 ifeq ($(OS),Windows_NT)
 $(TEST_DS_BIN): $(TEST_DS_OBJ) $(DS_OBJS) $(MEMORY_OBJS)
-    @if not exist $(BIN_DIR) mkdir $(BIN_DIR)
-    $(CC) $(CFLAGS) $(OUTFLAG)$@ $**
+	@if not exist $(BIN_DIR) mkdir $(BIN_DIR)
+	$(CC) $(CFLAGS) $(OUTFLAG) $@ $^
 
 $(CLI_EXE): $(CLI_SRC) $(DS_OBJS) $(MEMORY_OBJS)
-    @if not exist $(BIN_DIR) mkdir $(BIN_DIR)
-    $(CC) $(CFLAGS) $(OUTFLAG)$@ $**
+	@if not exist $(BIN_DIR) mkdir $(BIN_DIR)
+	$(CC) $(CFLAGS) $(OUTFLAG) $@ $^
 else
-$(TEST_DS_BIN): $(TEST_DS_OBJ) $(DS_OBJS) $(MEMORY_OBJS)
-    @mkdir -p $(BIN_DIR)
-    $(CC) $(CFLAGS) $^ -o $@
+$(TEST_DS_BIN): $(TEST_DS_SRC) $(DS_OBJS) $(MEMORY_OBJS)
+	@mkdir -p $(BIN_DIR)
+	$(CC) $(CFLAGS) $^ -o $@
 
 $(CLI_EXE): $(CLI_SRC) $(DS_OBJS) $(MEMORY_OBJS)
-    @mkdir -p $(BIN_DIR)
-    $(CC) $(CFLAGS) $^ -o $@
+	@mkdir -p $(BIN_DIR)
+	$(CC) $(CFLAGS) $^ -o $@
 endif
 
 # === Build Static Library ===
 ifeq ($(OS),Windows_NT)
 $(LIB_DIR)/libcurrc.a: $(DS_OBJS) $(MEMORY_OBJS)
-    @if not exist $(LIB_DIR) mkdir $(LIB_DIR)
-    $(AR) $(ARFLAGS)$@ $**
+	@if not exist $(LIB_DIR) mkdir $(LIB_DIR)
+	$(AR) $(ARFLAGS) $@ $^
 else
 $(LIB_DIR)/libcurrc.a: $(DS_OBJS) $(MEMORY_OBJS)
-    @mkdir -p $(LIB_DIR)
-    $(AR) $(ARFLAGS) $@ $^
+	@mkdir -p $(LIB_DIR)
+	$(AR) $(ARFLAGS) $@ $^
 endif
 
 # === Build Shared Library for Linux/macOS (.so) ===
 $(LIB_DIR)/libcurrc.so: $(DS_OBJS) $(MEMORY_OBJS)
-    @mkdir -p $(LIB_DIR)
-    $(CC) -shared -o $@ $^
+	@mkdir -p $(LIB_DIR)
+	$(CC) -shared -o $@ $^
 
 # === Build DLL for Windows ===
 ifeq ($(OS),Windows_NT)
 $(LIB_DIR)/currc.dll: $(DS_OBJS) $(MEMORY_OBJS)
-    @if not exist $(LIB_DIR) mkdir $(LIB_DIR)
-    $(CC) $(CFLAGS) $(SHARED) $(OUTFLAG)$@ $**
+	@if not exist $(LIB_DIR) mkdir $(LIB_DIR)
+	$(CC) $(CFLAGS) $(SHARED) $(OUTFLAG)$@ $^
 else
 $(LIB_DIR)/currc.dll: $(DS_OBJS) $(MEMORY_OBJS)
-    @mkdir -p $(LIB_DIR)
-    $(CC) -shared -o $@ $^
+	@mkdir -p $(LIB_DIR)
+	$(CC) -shared -o $@ $^
 endif
 
 # === Clean ===

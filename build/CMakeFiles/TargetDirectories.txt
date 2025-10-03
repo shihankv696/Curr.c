@@ -1,0 +1,3 @@
+D:/Project/Curr.c/build/CMakeFiles/currc.dir
+D:/Project/Curr.c/build/CMakeFiles/ALL_BUILD.dir
+D:/Project/Curr.c/build/CMakeFiles/ZERO_CHECK.dir
